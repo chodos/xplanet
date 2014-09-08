@@ -272,6 +272,52 @@ function twentytwelve_widgets_init() {
 }
 add_action( 'widgets_init', 'twentytwelve_widgets_init' );
 
+/**
+ * Widget chodos
+ */
+ 
+class AssuntosWidget extends WP_Widget {
+
+	function __construct() {
+		$widget_ops = array('classname' => 'widget_assunto', 'description' => __('Exibe menu dropdown de assuntos.'));
+		$control_ops = array('width' => 400, 'height' => 350);
+		parent::__construct('assuntos', __('Assuntos'), $widget_ops, $control_ops);
+	}
+
+	function widget( $args, $instance ) {
+		extract($args);
+		$title = apply_filters( 'widget_title', empty( $instance['title'] ) ? '' : $instance['title'], $instance, $this->id_base );
+		echo $before_widget;
+		if ( !empty( $title ) ) { echo $before_title . $title . $after_title; } 
+		$assunto = get_tags();
+		if($assunto) {
+			?><select onchange="location = this.options[this.selectedIndex].value;">
+				<option value=""> </option><?php
+			foreach($assunto as $tag) {
+				echo '<option value="?tag=' . $tag->slug . '">' . $tag->name . '</option>';
+			}
+			?></select><?php
+		}
+		echo $after_widget;
+	}
+
+	function update( $new_instance, $old_instance ) {
+		$instance['title'] = strip_tags(stripslashes($new_instance['title']));
+		return $instance;
+	}
+
+	function form( $instance ) {
+		$instance = wp_parse_args( (array) $instance, array( 'title' => '') );
+		$title = esc_attr( $instance['title'] );
+?>
+		<p><label for="<?php echo $this->get_field_id('title'); ?>"><?php _e( 'Title:' ); ?></label>
+		<input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo $title; ?>" /></p>
+<?php
+	}
+}
+
+add_action('widgets_init', create_function('', 'return register_widget("AssuntosWidget");'));
+
 if ( ! function_exists( 'twentytwelve_content_nav' ) ) :
 /**
  * Displays navigation to next/previous pages when applicable.

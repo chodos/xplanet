@@ -893,10 +893,16 @@ class Walker_Category extends Walker {
 				elseif ( $category->term_id == $_current_category->parent )
 					$class .=  ' current-cat-parent';
 			}
-			$output .=  ' class="' . $class . '"';
+			$output .=  ' class="' . $class . ' widget-categoria"';
 			$output .= ">$link\n";
 		} else {
 			$output .= "\t$link<br />\n";
+		}
+		
+		if (!empty($category->description)) {
+			$output .= "<br />";
+			
+			$output .= esc_attr( strip_tags( apply_filters( 'category_description', $category->description, $category ) ) );
 		}
 	}
 
